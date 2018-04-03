@@ -1,16 +1,33 @@
 language: c
 dist: trusty
 sudo: true
+env:
+  - TEST_SUITE=deb_build
+  - TEST_SUITE=redhat_build
+  - TEST_SUITE=basic_build
+
+deb_build:
+    script:
+        - sudo apt-get -y install expect csh xzdec lintian fakeroot
+        - ( cd firejail; ./configure --prefix=/usr --enable-git-install && make deb && sudo dpkg -i firejail*.deb )
+
+redhat_build:
+    script:
+        echo "HELLO THERE!"
+    # dist:
+    # script:
+    #     sudo dnf install
 
 script:
-  - sudo apt-get -y install expect csh xzdec lintian fakeroot
-  # Build Debian package
-  - ( cd firejail; ./configure --prefix=/usr --enable-git-install && make deb && sudo dpkg -i firejail*.deb )
-  # Remove Debian package
-  - ( sudo dpkg -P firejail )
-  - ( cd firejail ; ./configure --prefix=/usr --enable-git-install && make && sudo make install && make test-travis )
-  - ( cd firejail ; sudo make install-strip DESTDIR=$(readlink -f appdir) )
-  # If successful, build release tarball
-  - ( cd appdir/ ; tar cfvj ../firejail-build$TRAVIS_BUILD_NUMBER.tar.bz2 . )
-  - curl --upload-file ./firejail-*.tar.bz2 https://transfer.sh/firejail-build$TRAVIS_BUILD_NUMBER.tar.bz2
-  - # Could use https://github.com/probonopd/uploadtool to upload to GitHub Releases instead
+    - sudo apt-get -y install expect csh xzdec lintian fakeroot
+    # # Build Debian package
+    # - ( cd firejail; ./configure --prefix=/usr --enable-git-install && make deb && sudo dpkg -i firejail*.deb )
+    # # Remove Debian package
+    # - ( sudo dpkg -P firejail )
+    - echo "THIS IS A DRILL! I repeat, THIS IS A DRILL."
+    # - ( cd firejail ; ./configure --prefix=/usr --enable-git-install && make && sudo make install && make test-travis )
+    # - ( cd firejail ; sudo make install-strip DESTDIR=$(readlink -f appdir) )
+    # # If successful, build release tarball
+    # - ( cd appdir/ ; tar cfvj ../firejail-build$TRAVIS_BUILD_NUMBER.tar.bz2 . )
+    # - curl --upload-file ./firejail-*.tar.bz2 https://transfer.sh/firejail-build$TRAVIS_BUILD_NUMBER.tar.bz2
+    - # Could use https://github.com/probonopd/uploadtool to upload to GitHub Releases instead
