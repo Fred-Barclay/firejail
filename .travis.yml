@@ -28,6 +28,7 @@ before_install:
     - 'sudo docker build --no-cache --rm --file=travis/Dockerfile.${distribution}-${version} --tag=${distribution}-${version}:ansible travis'
 
 script:
-    - container_id=$(mktemp)
-    - 'sudo docker run --detach --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:ro --volume="${PWD}":/etc/ansible/roles/nginx_role:ro ${distribution}-${version}:ansible > "${container_id}"'
-    - 'sudo docker exec "echo 'This is a test'"
+    'echo "HELLO "'
+    # - 'container_id=$(mktemp)'
+    # - 'sudo docker run --detach --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:ro --volume="${PWD}":/etc/ansible/roles/nginx_role:ro ${distribution}-${version}:ansible > "${container_id}"'
+    # - 'sudo docker exec "echo 'This is a test'"
