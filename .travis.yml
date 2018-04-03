@@ -1,33 +1,33 @@
 language: c
 dist: trusty
 sudo: true
+services:
+    - docker
+
 env:
-  - TEST_SUITE=deb_build
-  - TEST_SUITE=redhat_build
-  - TEST_SUITE=basic_build
+    - distribution: centos
+    version: 7
+    - distribution: fedora
+    version: 27
+    - distribution: fedora
+    version: 26
+    - distribution: ubuntu
+    version: xenial
+    - distribution: ubuntu
+    version: trusty
+    - distribution: debian
+    version: stretch
+    - distribution: debian
+    version: jessie
+  # - TEST_SUITE=deb_build
+  # - TEST_SUITE=redhat_build
+  # - TEST_SUITE=basic_build
 
-deb_build:
-    script:
-        - sudo apt-get -y install expect csh xzdec lintian fakeroot
-        - ( cd firejail; ./configure --prefix=/usr --enable-git-install && make deb && sudo dpkg -i firejail*.deb )
-
-redhat_build:
-    script:
-        echo "HELLO THERE!"
-    # dist:
-    # script:
-    #     sudo dnf install
+before_install:
+    - 'sudo docker pull ${distribution}:${version}'
+    - 'sudo docker build --no-cache --rm --file=travis/Dockerfile.${distribution}-${version} --tag=${distribution}-${version}:ansible travis'
 
 script:
-    - sudo apt-get -y install expect csh xzdec lintian fakeroot
-    # # Build Debian package
-    # - ( cd firejail; ./configure --prefix=/usr --enable-git-install && make deb && sudo dpkg -i firejail*.deb )
-    # # Remove Debian package
-    # - ( sudo dpkg -P firejail )
-    - echo "THIS IS A DRILL! I repeat, THIS IS A DRILL."
-    # - ( cd firejail ; ./configure --prefix=/usr --enable-git-install && make && sudo make install && make test-travis )
-    # - ( cd firejail ; sudo make install-strip DESTDIR=$(readlink -f appdir) )
-    # # If successful, build release tarball
-    # - ( cd appdir/ ; tar cfvj ../firejail-build$TRAVIS_BUILD_NUMBER.tar.bz2 . )
-    # - curl --upload-file ./firejail-*.tar.bz2 https://transfer.sh/firejail-build$TRAVIS_BUILD_NUMBER.tar.bz2
-    - # Could use https://github.com/probonopd/uploadtool to upload to GitHub Releases instead
+    - container_id=$(mktemp)
+    - 'sudo docker run --detach --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:ro --volume="${PWD}":/etc/ansible/roles/nginx_role:ro ${distribution}-${version}:ansible > "${container_id}"'
+    - 'sudo docker exec "echo 'This is a test'"
